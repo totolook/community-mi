@@ -1,0 +1,119 @@
+name: product-mi-builder
+
+on:
+ push:
+  tags:
+      - '*'
+permissions:
+  contents: write
+  packages: write
+
+env:
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
+  TAG: ${{ github.ref_name }}
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    env:
+      IMG_NAME: public/wso2mi
+    outputs:
+      wso2_version: ${{ env.WSO2_VERSION }}
+      
+    steps:
+      - name: Clone the repo
+        uses: actions/checkout@v3
+      - name: Clone the Product is from WSO2
+        uses: actions/checkout@v3
+        with:
+          repository: wso2/micro-integrator
+          path: wso2mi
+          ref: ${{env.TAG}}
+      - name: Set up Adopt JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: "11.0.19"
+          distribution: "adopt"
+    
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Micro-integrator build with JDK 11 without Integration Tests
+        run: |
+          mvn clean install -f wso2mi --batch-mode -Dmaven.test.skip=true | tee mvn-build.log
+      - name: get version from maven
+        run: |
+          echo "WSO2_VERSION=$(mvn help:evaluate -f wso2mi -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+            name: wso2mi-${{env.TAG}}
+            path: wso2mi/distribution/target/wso2mi-${{ env.WSO2_VERSION }}.zip
+     
+  
+  build-docker:
+    runs-on: ubuntu-22.04
+    needs: [build]
+    env:
+      WSO2_VERSION: ${{needs.build.outputs.wso2_version}}
+    steps:
+      - name: Clone the repo
+        uses: actions/checkout@v3
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          path: docker
+          name: wso2mi-${{env.TAG}}
+        
+      # - name: Prepare docker build
+      #   run: |
+      #     cp wso2mi/modules/distribution/target/wso2mi-${{ env.WSO2_VERSION }}.zip docker/
+      
+      - name: Docker metadata
+        id: metadata
+        uses: docker/metadata-action@v3
+        with:
+            images: ${{ vars.REGISTRY }}/${{ github.repository }}
+            tags: |
+              type=semver,pattern={{version}}
+              type=semver,pattern={{major}}.{{minor}}
+              type=raw,value={{sha}},enable=${{ github.ref_type != 'tag' }}
+      - name: Login to Registry
+        uses: docker/login-action@v2
+        with:
+            registry: ${{ vars.REGISTRY }}
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push Docker image
+        id: build-push
+        uses: docker/build-push-action@v2
+        with:
+          context: docker
+          file: docker/Dockerfile.alpine
+          # push: ${{ github.event.base_ref =='refs/heads/main' && github.ref_type == 'tag' && !startsWith(github.ref, 'refs/tags/v0.')}}
+          push: true
+          build-args: WSO2_SERVER_VERSION=${{ env.WSO2_VERSION }} 
+          tags: ${{ steps.metadata.outputs.tags }}
+          labels: ${{ steps.metadata.outputs.labels }}
+      
+  
+  release:
+    runs-on: ubuntu-22.04
+    needs: [ build]
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: wso2mi-${{env.TAG}}
+      - uses: ncipollo/release-action@v1
+        with:
+          name: "Release WSO2 MI ${{env.TAG}}"
+          body: "Release WSO2 MI ${{env.TAG}} under Apache License by Toto"
+          artifacts: "./**/*.zip"
+          artifactContentType: "Application/zip"
