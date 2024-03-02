@@ -16,7 +16,7 @@
         </mirror>
         <mirror>
             <id>snapshot-http-unblocker</id>
-            <mirrorOf>wso2-public</mirrorOf>
+            <mirrorOf>wso2-nexus</mirrorOf>
             <name></name>
             <url>http://dist.wso2.org/nexus/content/groups/wso2-public</url>
         </mirror>
