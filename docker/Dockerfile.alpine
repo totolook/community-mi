@@ -17,7 +17,7 @@
 # ------------------------------------------------------------------------
 
 # set base Docker image to Alpine Docker image
-FROM  eclipse-temurin:17.0.6_10-jdk-alpine
+FROM  eclipse-temurin:11.0.19_7-jdk-alpine
 # FROM  eclipse-temurin:11.0.19_7-jdk-alpine
 LABEL maintainer="Antonio dG <totodg@totolook.it>"
 LABEL org.opencontainers.image.description "GA verion of Micro Ingrator build by Toto"
@@ -37,7 +37,7 @@ ARG USER_GROUP_ID=802
 ARG USER_HOME=/home/${USER}
 # build arguments for WSO2 product installation
 ARG WSO2_SERVER_NAME=wso2mi
-ARG WSO2_SERVER_VERSION=4.2.0
+ARG WSO2_SERVER_VERSION=4.1.0
 ARG WSO2_SERVER_REPOSITORY=product-is
 ARG WSO2_SERVER=${WSO2_SERVER_NAME}-${WSO2_SERVER_VERSION}
 ARG WSO2_DIST=${WSO2_SERVER_NAME}-${WSO2_SERVER_VERSION}
