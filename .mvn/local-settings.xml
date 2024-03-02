@@ -1,0 +1,24 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 http://maven.apache.org/xsd/settings-1.2.0.xsd">
+    <mirrors>
+        <mirror>
+            <id>release-http-unblocker</id>
+            <mirrorOf>wso2.releases</mirrorOf>
+            <name></name>
+            <url>http://maven.wso2.org/nexus/content/repositories/releases</url>
+        </mirror>
+        <mirror>
+            <id>snapshot-http-unblocker</id>
+            <mirrorOf>wso2.snapshots</mirrorOf>
+            <name></name>
+            <url>http://maven.wso2.org/nexus/content/repositories/snapshots</url>
+        </mirror>
+        <mirror>
+            <id>snapshot-http-unblocker</id>
+            <mirrorOf>wso2-public</mirrorOf>
+            <name></name>
+            <url>http://dist.wso2.org/nexus/content/groups/wso2-public</url>
+        </mirror>
+    </mirrors>
+</settings>

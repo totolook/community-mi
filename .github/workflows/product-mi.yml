@@ -44,7 +44,7 @@ jobs:
 
       - name: Micro-integrator build with JDK 11 without Integration Tests
         run: |
-          mvn clean install -f wso2mi --batch-mode -Dmaven.test.skip=true | tee mvn-build.log
+          mvn clean install --settings ./.mvn/local-settings.xml -f wso2mi --batch-mode -Dmaven.test.skip=true | tee mvn-build.log
       - name: get version from maven
         run: |
           echo "WSO2_VERSION=$(mvn help:evaluate -f wso2mi -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
