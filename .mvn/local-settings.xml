@@ -15,7 +15,7 @@
             <url>http://maven.wso2.org/nexus/content/repositories/snapshots</url>
         </mirror>
         <mirror>
-            <id>snapshot-http-unblocker</id>
+            <id>default-http-unblocker</id>
             <mirrorOf>wso2-nexus</mirrorOf>
             <name></name>
             <url>http://dist.wso2.org/nexus/content/groups/wso2-public</url>
