@@ -3,22 +3,11 @@
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 http://maven.apache.org/xsd/settings-1.2.0.xsd">
     <mirrors>
         <mirror>
-            <id>release-http-unblocker</id>
-            <mirrorOf>wso2.releases</mirrorOf>
-            <name></name>
-            <url>http://maven.wso2.org/nexus/content/repositories/releases</url>
-        </mirror>
-        <mirror>
-            <id>snapshot-http-unblocker</id>
-            <mirrorOf>wso2.snapshots</mirrorOf>
-            <name></name>
-            <url>http://maven.wso2.org/nexus/content/repositories/snapshots</url>
-        </mirror>
-        <mirror>
-            <id>default-http-unblocker</id>
-            <mirrorOf>wso2-nexus</mirrorOf>
-            <name></name>
-            <url>http://dist.wso2.org/nexus/content/groups/wso2-public</url>
+            <id>maven-default-http-blocker</id>
+            <mirrorOf>casodown-dbd</mirrorOf>
+            <name>Pseudo repository to mirror external repositories initially using HTTP.</name>
+            <url>http://0.0.0.0/</url>
+            <blocked>false</blocked>
         </mirror>
     </mirrors>
 </settings>
